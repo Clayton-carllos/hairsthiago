@@ -117,7 +117,7 @@ def agendar():
     try:
         msg_admin = Message(
             subject='Novo Agendamento Realizado',
-            recipients=['claytinhogames@gmail.com'],  # Substitua pelo e-mail do admin
+            recipients=['thiagohsj02@gmail.com'],  # Substitua pelo e-mail do admin
             body=f"Um novo agendamento foi feito:\n\n"
                  f"Nome: {nome}\n"
                  f"Telefone: {telefone}\n"
