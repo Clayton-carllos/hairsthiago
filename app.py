@@ -274,10 +274,10 @@ def home():
     # Total de agendamentos
     total_agendamentos = Agendamento.query.count()
 
-    # Pega a data e hora atuais
-    agora = datetime.now()
+    # Pega o horário atual em São Paulo
+    agora = datetime.now(fuso_brasilia)
     
-   # Agendamentos futuros (contando)
+   # Consultar os agendamentos futuros, considerando o fuso horário de São Paulo
     agendamentos_futuros = db.session.query(Agendamento).filter(
     (Agendamento.data > agora.date()) | 
     ((Agendamento.data == agora.date()) & (Agendamento.horario > agora.strftime('%H:%M')))
