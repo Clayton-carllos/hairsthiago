@@ -25,12 +25,12 @@ app.config['MAIL_PORT'] = 587  # Porta do SMTP
 app.config['MAIL_USE_TLS'] = True  # TLS ativado
 app.config['MAIL_USERNAME'] = 'clayton.carllos@gmail.com'  # Seu e-mail
 app.config['MAIL_PASSWORD'] = 'jyzu ncfa pvag xsjo'  # Sua senha ou App Password
-app.config['MAIL_DEFAULT_SENDER'] = 'clayton.carllos08@gmail.com'  # Remetente padrão
+app.config['MAIL_DEFAULT_SENDER'] = 'thiagohjs02@gmail.com'  # Remetente padrão
 
 mail = Mail(app)  # Inicializa o Flask-Mail
 
 # Configuração do banco de dados
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://claytonhairs_db_user:28fKudghCoDjcPVTR3r0c6FrTdsTOLSz@dpg-cu7spqan91rc73dst7fg-a.virginia-postgres.render.com/claytonhairs_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hairsthiago_db_user:wme3MowRmgPtA6BGRV3QsTjnalHIUDK4@dpg-cu7tnk52ng1s73brd4mg-a.oregon-postgres.render.com/hairsthiago_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -107,7 +107,7 @@ def agendar():
     try:
         msg_admin = Message(
             subject='Novo Agendamento Realizado',
-            recipients=['claytuber12@gmail.com'],  # Substitua pelo e-mail do admin
+            recipients=['thiagohsj02@gmail.com'],  # Substitua pelo e-mail do admin
             body=f"Um novo agendamento foi feito:\n\n"
                  f"Nome: {nome}\n"
                  f"Telefone: {telefone}\n"
