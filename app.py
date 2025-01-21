@@ -13,6 +13,7 @@ from sqlalchemy import cast, Time
 from flask_mail import Mail, Message
 from twilio.rest import Client
 from flask import flash
+import pytz
 
 
 
@@ -25,9 +26,12 @@ app.config['MAIL_PORT'] = 587  # Porta do SMTP
 app.config['MAIL_USE_TLS'] = True  # TLS ativado
 app.config['MAIL_USERNAME'] = 'clayton.carllos@gmail.com'  # Seu e-mail
 app.config['MAIL_PASSWORD'] = 'jyzu ncfa pvag xsjo'  # Sua senha ou App Password
-app.config['MAIL_DEFAULT_SENDER'] = 'thiagohjs02@gmail.com'  # Remetente padrão
+app.config['MAIL_DEFAULT_SENDER'] = 'clayton.carllos08@gmail.com'  # Remetente padrão
 
 mail = Mail(app)  # Inicializa o Flask-Mail
+
+# Definindo o fuso horário (exemplo com fuso de São Paulo)
+fuso_brasilia = pytz.timezone('America/Sao_Paulo')
 
 # Configuração do banco de dados
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hairsthiago_db_user:wme3MowRmgPtA6BGRV3QsTjnalHIUDK4@dpg-cu7tnk52ng1s73brd4mg-a.oregon-postgres.render.com/hairsthiago_db'
@@ -78,13 +82,18 @@ def agendar():
     nome = request.form['nome']
     telefone = request.form['telefone']
     email = request.form['email']
+    
+    # Converte a data do formulário para o formato correto e para o fuso horário
     data = datetime.strptime(request.form['data'], '%Y-%m-%d').date()
-    horario = request.form['horario']
-    mensagem = request.form.get('mensagem')
+    # Adiciona o fuso horário correto à data
+    data = fuso_brasilia.localize(datetime.combine(data, datetime.min.time()))
 
+    # Horário do agendamento (como string 'HH:MM')
+    horario = request.form['horario']
+    
     # Criação de um novo agendamento
     novo_agendamento = Agendamento(
-        nome=nome, telefone=telefone, email=email, data=data, horario=horario, mensagem=mensagem
+        nome=nome, telefone=telefone, email=email, data=data, horario=horario
     )
 
     # Salvar no banco de dados
@@ -114,7 +123,6 @@ def agendar():
                  f"E-mail: {email}\n"
                  f"Data: {data.strftime('%d/%m/%Y')}\n"
                  f"Horário: {horario}\n"
-                 f"Mensagem: {mensagem if mensagem else 'Sem mensagem adicional.'}",
         )
         mail.send(msg_admin)
     except Exception as e:
