@@ -90,10 +90,11 @@ def agendar():
 
     # Horário do agendamento (como string 'HH:MM')
     horario = request.form['horario']
+    mensagem = request.form.get('mensagem')
     
     # Criação de um novo agendamento
     novo_agendamento = Agendamento(
-        nome=nome, telefone=telefone, email=email, data=data, horario=horario
+        nome=nome, telefone=telefone, email=email, data=data, horario=horario, mensagem=mensagem
     )
 
     # Salvar no banco de dados
@@ -123,6 +124,7 @@ def agendar():
                  f"E-mail: {email}\n"
                  f"Data: {data.strftime('%d/%m/%Y')}\n"
                  f"Horário: {horario}\n"
+                 f"Mensagem: {mensagem if mensagem else 'Sem mensagem adicional.'}",
         )
         mail.send(msg_admin)
     except Exception as e:
