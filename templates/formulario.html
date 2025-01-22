@@ -57,79 +57,101 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-    const dataInput = document.querySelector('#data');  // Campo de data
-    const horarioSelect = document.querySelector('#horario');  // Campo de horário
+            const dataInput = document.querySelector('#data');  // Campo de data
+            const horarioSelect = document.querySelector('#horario');  // Campo de horário
 
-    // Definindo data mínima para não permitir datas passadas
-    const today = new Date().toISOString().split('T')[0]; // Pega a data de hoje no formato YYYY-MM-DD
-    dataInput.setAttribute('min', today);
+            // Definindo data mínima para não permitir datas passadas
+            const today = new Date().toISOString().split('T')[0]; // Pega a data de hoje no formato YYYY-MM-DD
+            dataInput.setAttribute('min', today);
 
-    // Lógica para habilitar/desabilitar horários
-    dataInput.addEventListener('change', function () {
-        const dataSelecionada = dataInput.value;
+            // Lógica para habilitar/desabilitar horários
+            dataInput.addEventListener('change', function () {
+                const dataSelecionada = dataInput.value;
 
-        if (dataSelecionada) {
-            // Verifica horários indisponíveis via fetch
-            fetch(`/horarios_indisponiveis?data=${dataSelecionada}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.error) {
-                        console.error(data.error);
-                        return;
-                    }
+                // Limpar o valor do horário selecionado sempre que a data mudar
+                horarioSelect.value = '';  // Resetando o valor do campo de horário
 
-                    // Reseta os horários antes de atualizar
-                    Array.from(horarioSelect.options).forEach(option => {
-                        option.disabled = false;  // Habilita novamente todos os horários
-                        option.classList.add("horario-disponivel");  // Adiciona a classe de disponível
-                        option.classList.remove("horario-indisponivel");  // Remove a classe de indisponível
-                    });
-
-                    // Desabilita os horários ocupados
-                    data.horarios_indisponiveis.forEach(horario => {
-                        const option = Array.from(horarioSelect.options).find(opt => opt.value === horario);
-                        if (option) {
-                            option.disabled = true;  // Desabilita o horário
-                            option.classList.remove("horario-disponivel");  // Remove a classe de disponível
-                            option.classList.add("horario-indisponivel");  // Adiciona a classe de indisponível
-                        }
-                    });
-
-                    // Desabilitar horários passados no dia atual
-                    if (dataSelecionada === today) {
-                        const currentDate = new Date();
-                        const currentHour = currentDate.getHours();
-                        const currentMinutes = currentDate.getMinutes();
-
-                        Array.from(horarioSelect.options).forEach(option => {
-                            const [hour, minute] = option.value.split(':').map(Number);
-                            if (hour < currentHour || (hour === currentHour && minute <= currentMinutes)) {
-                                option.disabled = true;
-                                option.classList.remove("horario-disponivel");
-                                option.classList.add("horario-indisponivel");
+                if (dataSelecionada) {
+                    // Verifica horários indisponíveis via fetch
+                    fetch(`/horarios_indisponiveis?data=${dataSelecionada}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.error) {
+                                console.error(data.error);
+                                return;
                             }
-                        });
-                    }
-                })
-                .catch(error => console.error('Erro ao buscar horários:', error));
-        }
-    });
-});
 
+                            // Reseta os horários antes de atualizar
+                            Array.from(horarioSelect.options).forEach(option => {
+                                option.disabled = false;  // Habilita novamente todos os horários
+                                option.classList.add("horario-disponivel");  // Adiciona a classe de disponível
+                                option.classList.remove("horario-indisponivel");  // Remove a classe de indisponível
+                            });
 
-  // Desabilitar horários passados no mesmo dia (agora considerando minutos também)
-  const currentDate = new Date();
-  const currentHour = currentDate.getHours();
-  const currentMinutes = currentDate.getMinutes();
+                            // Desabilita os horários ocupados
+                            data.horarios_indisponiveis.forEach(horario => {
+                                const option = Array.from(horarioSelect.options).find(opt => opt.value === horario);
+                                if (option) {
+                                    option.disabled = true;  // Desabilita o horário
+                                    option.classList.remove("horario-disponivel");  // Remove a classe de disponível
+                                    option.classList.add("horario-indisponivel");  // Adiciona a classe de indisponível
+                                }
+                            });
 
-  Array.from(horarioSelect.options).forEach(option => {
-    const [hour, minute] = option.value.split(':').map(Number);  // Converte hora e minuto
-    if (hour < currentHour || (hour === currentHour && minute <= currentMinutes)) {
-      option.disabled = true;  // Desabilita se o horário já passou
-    }
-  });
+                            // Desabilitar horários passados no dia atual
+                            if (dataSelecionada === today) {
+                                const currentDate = new Date();
+                                const currentHour = currentDate.getHours();
+                                const currentMinutes = currentDate.getMinutes();
 
-    </script>     
+                                Array.from(horarioSelect.options).forEach(option => {
+                                    const [hour, minute] = option.value.split(':').map(Number);
+                                    if (hour < currentHour || (hour === currentHour && minute <= currentMinutes)) {
+                                        option.disabled = true;
+                                        option.classList.remove("horario-disponivel");
+                                        option.classList.add("horario-indisponivel");
+                                    }
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Erro ao buscar horários:', error));
+                }
+            });
+
+            // Formatação de telefone
+            const telefoneInput = document.querySelector('#telefone');  // Campo de telefone
+
+            telefoneInput.addEventListener('input', function (event) {
+                let telefone = event.target.value.replace(/\D/g, '');  // Remove tudo o que não for número
+
+                // Limitar o número de caracteres para 11
+                if (telefone.length > 11) {
+                    telefone = telefone.slice(0, 11);
+                }
+
+                // Aplica a formatação (XX) XXXXX-XXXX
+                if (telefone.length <= 2) {
+                    telefone = `(${telefone}`;
+                } else if (telefone.length <= 6) {
+                    telefone = `(${telefone.slice(0, 2)}) ${telefone.slice(2)}`;
+                } else {
+                    telefone = `(${telefone.slice(0, 2)}) ${telefone.slice(2, 7)}-${telefone.slice(7, 11)}`;
+                }
+
+                // Atualiza o valor do input
+                event.target.value = telefone;
+            });
+
+            // Permitir apagar e corrigir formatação
+            telefoneInput.addEventListener('keydown', function (event) {
+                if (event.key === 'Backspace' || event.key === 'Delete') {
+                    // Corrigir formatação para permitir apagar os caracteres especiais
+                    let telefone = telefoneInput.value.replace(/\D/g, ''); // Remove todos os caracteres não numéricos
+                    telefoneInput.value = telefone;  // Atualiza o valor do input
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>
